@@ -50,7 +50,7 @@ describe( 'this test server', function() {
       },
       [
         function(cb) {
-          get('/','ok',cb);
+          get('/','ok',cb)
         },
       ],
       done
@@ -63,7 +63,7 @@ describe( 'this test server', function() {
       },
       [
         function(cb) {
-          get('/','ok',cb);
+          get('/','ok',cb)
         },
       ],
       done
@@ -87,8 +87,27 @@ describe( 'composable-middleware', function() {
         ]),
         [
           function(cb) {
-            get('/','okay',cb);
+            get('/','okay',cb)
+          },
+        ],
+        done
+      );
+    } );
+    it( 'should run a simple request through two layers of middleware', function(done) {
+      serve(
+        composable([
+          function(req,res,next) {
+            req.msg= 'it is ';
+            next();
+          },
+          function(req,res,next) {
+            res.send(req.msg+'okay');
           }
+        ]),
+        [
+          function(cb) {
+            get('/','it is okay',cb)
+          },
         ],
         done
       );
