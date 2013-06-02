@@ -4,12 +4,13 @@
 require('should');
 var http = require('http');
 var request = require('request');
+var async = require('async');
 var composable = require('../');
 var port= 3000;
 
 var composable_middleware = require( '../lib/composable-middleware.js' );
 
-function serve(middleware,requests) {
+function serve(middleware,requests,done) {
   var server= http.createServer(function(req,res){
     res.send= function(status,body) {
       if (1 == arguments.length) {
@@ -21,13 +22,13 @@ function serve(middleware,requests) {
     }
     middleware(req,res,function(err) {
       if (err) {
-        throw err;
+        done(err);
       }
     });
   })
-  requests(function(done) {
+  async.series(requests,function (){
     server.close(function() {
-      if (done) done();
+      done();
     });
   })
   server.listen(port)
@@ -47,11 +48,26 @@ describe( 'this test server', function() {
       function(req,res,next) {
         res.send('ok');
       },
-      function(cb) {
-        get('/','ok',done);
-      }
+      [
+        function(cb) {
+          get('/','ok',cb);
+        },
+      ],
+      done
     );
-    composable_middleware.should.be.a( 'function' );
+  } );
+  it( 'should be able to run a second time', function(done) {
+    serve(
+      function(req,res,next) {
+        res.send('ok');
+      },
+      [
+        function(cb) {
+          get('/','ok',cb);
+        },
+      ],
+      done
+    );
   } );
 } );
 describe( 'composable-middleware', function() {
@@ -61,6 +77,21 @@ describe( 'composable-middleware', function() {
     } );
     it( 'should return a function', function() {
       composable_middleware().should.be.a( 'function' );
+    } );
+    it( 'should run a simple request through simple middleware', function(done) {
+      serve(
+        composable([
+          function(req,res,next) {
+            res.send('okay');
+          }
+        ]),
+        [
+          function(cb) {
+            get('/','okay',cb);
+          }
+        ],
+        done
+      );
     } );
   } );
 } );

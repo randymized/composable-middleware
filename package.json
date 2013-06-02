@@ -34,7 +34,8 @@
     "grunt-simple-mocha": "git://github.com/yaymukund/grunt-simple-mocha.git",
     "grunt-contrib-watch": "~0.3.1",
     "grunt": "~0.4.1",
-    "request": "~2.21.0"
+    "request": "~2.21.0",
+    "async": "~0.2.9"
   },
   "keywords": []
 }
