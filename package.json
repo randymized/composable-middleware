@@ -1,0 +1,40 @@
+{
+  "name": "composable-middleware",
+  "description": "Treat a sequence of middleware as middleware.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/randymized/composable-middleware",
+  "author": {
+    "name": "Randy McLaughlin",
+    "email": "ot40ddj02@sneakemail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/randymized/composable-middleware.git"
+  },
+  "bugs": {
+    "url": "https://github.com/randymized/composable-middleware/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/randymized/composable-middleware/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "./index.js",
+  "engines": {
+    "node": ">= 0.6.0"
+  },
+  "scripts": {
+    "test": "grunt simplemocha"
+  },
+  "devDependencies": {
+    "mocha": "~1.9.0",
+    "should": "~1.2.2",
+    "grunt-contrib-jshint": "~0.4.0",
+    "grunt-simple-mocha": "git://github.com/yaymukund/grunt-simple-mocha.git",
+    "grunt-contrib-watch": "~0.3.1",
+    "grunt": "~0.4.1",
+    "request": "~2.21.0"
+  },
+  "keywords": []
+}
