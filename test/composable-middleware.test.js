@@ -88,130 +88,67 @@ describe( 'composable-middleware', function() {
     it( 'should return a function', function() {
       composable_middleware().should.be.a( 'function' );
     } );
-    it( 'should run a simple request through simple middleware', function(done) {
-      serve(
-        composable([
-          function(req,res,next) {
-            res.send('okay');
-          }
-        ]),
-        [
-          function(cb) {
-            get('/','okay',cb)
-          },
-        ],
-        done
-      );
-    } );
-    it( 'should run a simple request through two layers of middleware', function(done) {
-      serve(
-        composable([
-          function(req,res,next) {
-            req.msg= 'it is ';
-            next();
-          },
-          function(req,res,next) {
-            res.send(req.msg+'okay');
-          }
-        ]),
-        [
-          function(cb) {
-            get('/','it is okay',cb)
-          },
-        ],
-        done
-      );
-    } );
-    it( 'should run a middleware within middleware', function(done) {
-      serve(
-        composable([
-          function(req,res,next) {
-            req.msg= 'a';
-            next();
-          },
-          composable([
-            function(req,res,next) {
-              req.msg+= '1';
-              next();
-            },
-            function(req,res,next) {
-              req.msg+= '2';
-              next();
-            },
-          ]),
-          function(req,res,next) {
-            res.send(req.msg+'b');
-          }
-        ]),
-        [
-          function(cb) {
-            get('/','a12b',cb)
-          },
-        ],
-        done
-      );
-    } );
-    it( 'should run a middleware within middleware where inner is first', function(done) {
-      serve(
-        composable([
-          composable([
-            function(req,res,next) {
-              req.msg= '1';
-              next();
-            },
-            function(req,res,next) {
-              req.msg+= '2';
-              next();
-            },
-          ]),
-          function(req,res,next) {
-            req.msg+= 'a';
-            next();
-          },
-          function(req,res,next) {
-            res.send(req.msg+'b');
-          }
-        ]),
-        [
-          function(cb) {
-            get('/','12ab',cb)
-          },
-        ],
-        done
-      );
-    } );
-    it( 'should run a middleware within middleware where inner is last', function(done) {
-      serve(
-        composable([
-          function(req,res,next) {
-            req.msg= 'a';
-            next();
-          },
-          function(req,res,next) {
-            req.msg+= 'b';
-            next();
-          },
-          composable([
-            function(req,res,next) {
-              req.msg+= '1';
-              next();
-            },
-            function(req,res,next) {
-              req.msg+= '2';
-              res.send(req.msg);
-            },
-          ])
-        ]),
-        [
-          function(cb) {
-            get('/','ab12',cb)
-          },
-        ],
-        done
-      );
-    } );
-    it( 'should allow middleware to be referenced by a variable', function(done) {
-      var onetwo=
+  } );
+  it( 'should run a simple request through simple middleware', function(done) {
+    serve(
+      composable([
+        function(req,res,next) {
+          res.send('okay');
+        }
+      ]),
+      [
+        function(cb) {
+          get('/','okay',cb)
+        },
+      ],
+      done
+    );
+  } );
+  it( 'should run a simple request through two layers of middleware', function(done) {
+    serve(
+      composable([
+        function(req,res,next) {
+          req.msg= 'it is ';
+          next();
+        },
+        function(req,res,next) {
+          res.send(req.msg+'okay');
+        }
+      ]),
+      [
+        function(cb) {
+          get('/','it is okay',cb)
+        },
+      ],
+      done
+    );
+  } );
+  it( 'should support multiple steps in the function argument without them being wrapped in an array', function(done) {
+    serve(
+      composable(
+        function(req,res,next) {
+          req.msg= 'it is ';
+          next();
+        },
+        function(req,res,next) {
+          res.send(req.msg+'okay');
+        }
+      ),
+      [
+        function(cb) {
+          get('/','it is okay',cb)
+        },
+      ],
+      done
+    );
+  } );
+  it( 'should run a middleware within middleware', function(done) {
+    serve(
+      composable(
+        function(req,res,next) {
+          req.msg= 'a';
+          next();
+        },
         composable([
           function(req,res,next) {
             req.msg+= '1';
@@ -219,100 +156,182 @@ describe( 'composable-middleware', function() {
           },
           function(req,res,next) {
             req.msg+= '2';
+            next();
+          },
+        ]),
+        function(req,res,next) {
+          res.send(req.msg+'b');
+        }
+      ),
+      [
+        function(cb) {
+          get('/','a12b',cb)
+        },
+      ],
+      done
+    );
+  } );
+  it( 'should run a middleware within middleware where inner is first', function(done) {
+    serve(
+      composable(
+        composable(
+          function(req,res,next) {
+            req.msg= '1';
+            next();
+          },
+          function(req,res,next) {
+            req.msg+= '2';
+            next();
+          }
+        ),
+        function(req,res,next) {
+          req.msg+= 'a';
+          next();
+        },
+        function(req,res,next) {
+          res.send(req.msg+'b');
+        }
+      ),
+      [
+        function(cb) {
+          get('/','12ab',cb)
+        },
+      ],
+      done
+    );
+  } );
+  it( 'should run a middleware within middleware where inner is last', function(done) {
+    serve(
+      composable(
+        function(req,res,next) {
+          req.msg= 'a';
+          next();
+        },
+        function(req,res,next) {
+          req.msg+= 'b';
+          next();
+        },
+        composable(
+          function(req,res,next) {
+            req.msg+= '1';
+            next();
+          },
+          function(req,res,next) {
+            req.msg+= '2';
             res.send(req.msg);
-          },
-        ]);
+          }
+        )
+      ),
+      [
+        function(cb) {
+          get('/','ab12',cb)
+        },
+      ],
+      done
+    );
+  } );
+  it( 'should allow middleware to be referenced by a variable', function(done) {
+    var onetwo=
+      composable(
+        function(req,res,next) {
+          req.msg+= '1';
+          next();
+        },
+        function(req,res,next) {
+          req.msg+= '2';
+          res.send(req.msg);
+        }
+      );
 
-      var ab=
-        composable([
-          function(req,res,next) {
-            req.msg= 'a';
-            next();
-          },
-          function(req,res,next) {
-            req.msg+= 'b';
-            next();
-          },
-          onetwo
-        ]);
+    var ab=
+      composable(
+        function(req,res,next) {
+          req.msg= 'a';
+          next();
+        },
+        function(req,res,next) {
+          req.msg+= 'b';
+          next();
+        },
+        onetwo
+      );
 
-      serve(
+    serve(
+      ab,
+      [
+        function(cb) {
+          get('/','ab12',cb)
+        },
+      ],
+      done
+    );
+  } );
+  it( 'should allow concatenation of middleware', function(done) {
+    var mw= function(symbol){
+      return function(req,res,next) {
+        req.msg+= symbol;
+        next();
+        }
+      };
+
+    var onetwo=
+      composable(
+        mw('1'),
+        mw('2')
+      );
+
+    var ab=
+      composable(
+        mw('a'),
+        mw('b')
+      );
+
+    serve(
+      composable(
+        prepare_msg,
+        onetwo,
         ab,
-        [
-          function(cb) {
-            get('/','ab12',cb)
-          },
-        ],
-        done
-      );
-    } );
-    it( 'should allow concatenation of middleware', function(done) {
-      var mw= function(symbol){
-        return function(req,res,next) {
-          req.msg+= symbol;
-          next();
-          }
-        };
+        send_msg
+      ),
+      [
+        function(cb) {
+          get('/','12ab',cb)
+        },
+      ],
+      done
+    );
+  } );
+  it( 'should support a use function', function(done) {
+    var mw= function(symbol){
+      return function(req,res,next) {
+        req.msg+= symbol;
+        next();
+        }
+      };
 
-      var onetwo=
-        composable([
-          mw('1'),
-          mw('2')
-        ]);
+    var onetwo=
+      composable()
+        .use(mw('1'))
+        .use(mw('2'));
 
-      var ab=
-        composable([
-          mw('a'),
-          mw('b')
-        ]);
+    var ab=
+      composable()
+        .use(mw('a'))
+        .use(mw('b'));
 
-      serve(
-        composable([
-          prepare_msg,
-          onetwo,
-          ab,
-          send_msg
-        ]),
-        [
-          function(cb) {
-            get('/','12ab',cb)
-          },
-        ],
-        done
-      );
-    } );
-    it( 'should support a use function', function(done) {
-      var mw= function(symbol){
-        return function(req,res,next) {
-          req.msg+= symbol;
-          next();
-          }
-        };
-
-      var onetwo=
-        composable()
-          .use(mw('1'))
-          .use(mw('2'));
-
-      var ab=
-        composable()
-          .use(mw('a'))
-          .use(mw('b'));
-
-      serve(
-        composable([
-          prepare_msg,
-          onetwo,
-          ab,
-          send_msg
-        ]),
-        [
-          function(cb) {
-            get('/','12ab',cb)
-          },
-        ],
-        done
-      );
-    } );
+    serve(
+      composable(
+        prepare_msg,
+        onetwo,
+        ab,
+        send_msg
+      ),
+      [
+        function(cb) {
+          get('/','12ab',cb)
+        },
+      ],
+      done
+    );
   } );
 } );
