@@ -42,6 +42,16 @@ function get(url,expected,done) {
   })
 }
 
+var prepare_msg=
+  function(req,res,next) {
+    req.msg= '';
+    next();
+  };
+var send_msg=
+  function(req,res,next) {
+    res.send(req.msg);
+  };
+
 describe( 'this test server', function() {
   it( 'should run a simple request through very simple middleware', function(done) {
     serve(
@@ -244,11 +254,6 @@ describe( 'composable-middleware', function() {
           }
         };
 
-      var prepare=
-        function(req,res,next) {
-          req.msg= '';
-          next();
-        };
       var onetwo=
         composable([
           mw('1'),
@@ -260,17 +265,46 @@ describe( 'composable-middleware', function() {
           mw('a'),
           mw('b')
         ]);
-      var send=
-        function(req,res,next) {
-          res.send(req.msg);
-        };
 
       serve(
         composable([
-          prepare,
+          prepare_msg,
           onetwo,
           ab,
-          send
+          send_msg
+        ]),
+        [
+          function(cb) {
+            get('/','12ab',cb)
+          },
+        ],
+        done
+      );
+    } );
+    it( 'should support a use function', function(done) {
+      var mw= function(symbol){
+        return function(req,res,next) {
+          req.msg+= symbol;
+          next();
+          }
+        };
+
+      var onetwo=
+        composable()
+          .use(mw('1'))
+          .use(mw('2'));
+
+      var ab=
+        composable()
+          .use(mw('a'))
+          .use(mw('b'));
+
+      serve(
+        composable([
+          prepare_msg,
+          onetwo,
+          ab,
+          send_msg
         ]),
         [
           function(cb) {
