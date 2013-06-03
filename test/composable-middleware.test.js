@@ -42,15 +42,25 @@ function get(url,expected,done) {
   })
 }
 
-var prepare_msg=
-  function(req,res,next) {
-    req.msg= '';
+function prepare_msg(req,res,next)
+{
+  req.msg= '';
+  next();
+}
+
+function send_msg(req,res,next)
+{
+  res.send(req.msg);
+}
+
+function mw(symbol)
+{
+  return function(req,res,next) {
+    req.msg+= symbol;
     next();
-  };
-var send_msg=
-  function(req,res,next) {
-    res.send(req.msg);
-  };
+  }
+}
+
 
 describe( 'this test server', function() {
   it( 'should run a simple request through very simple middleware', function(done) {
@@ -267,13 +277,6 @@ describe( 'composable-middleware', function() {
     );
   } );
   it( 'should allow concatenation of middleware', function(done) {
-    var mw= function(symbol){
-      return function(req,res,next) {
-        req.msg+= symbol;
-        next();
-        }
-      };
-
     var onetwo=
       composable(
         mw('1'),
@@ -302,13 +305,6 @@ describe( 'composable-middleware', function() {
     );
   } );
   it( 'should support a use function', function(done) {
-    var mw= function(symbol){
-      return function(req,res,next) {
-        req.msg+= symbol;
-        next();
-        }
-      };
-
     var onetwo=
       composable()
         .use(mw('1'))
@@ -329,6 +325,28 @@ describe( 'composable-middleware', function() {
       [
         function(cb) {
           get('/','12ab',cb)
+        },
+      ],
+      done
+    );
+  } );
+  it( 'should recognize error-handling middleware and route next(err) to it, bypassing any intermediate middleware', function(done) {
+    serve(
+      composable()
+        .use(prepare_msg)
+        .use(mw('a'))
+        .use(function (req,res,next) {
+          next('error!')
+        })
+        .use(mw('b'))
+        .use(function (err,req,res,next) {
+          res.send(err+' '+req.msg);
+        })
+        .use(send_msg)
+      ,
+      [
+        function(cb) {
+          get('/','error! a',cb)
         },
       ],
       done
