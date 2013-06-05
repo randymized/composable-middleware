@@ -352,4 +352,81 @@ describe( 'composable-middleware', function() {
       done
     );
   } );
+it( 'should work as expected if the error-handling middleware is right after the middleware producing an error', function(done) {
+    serve(
+      composable()
+        .use(prepare_msg)
+        .use(mw('a'))
+        .use(function (req,res,next) {
+          next('error!')
+        })
+        .use(function (err,req,res,next) {
+          res.send(err+' '+req.msg);
+        })
+        .use(send_msg)
+      ,
+      [
+        function(cb) {
+          get('/','error! a',cb)
+        },
+      ],
+      done
+    );
+  } );
+it( 'should go back to the normal stack if an error handler calls next() without an err argument', function(done) {
+    serve(
+      composable()
+        .use(prepare_msg)
+        .use(mw('a'))
+        .use(function (req,res,next) {
+          next('error!')
+        })
+        .use(function (err,req,res,next) {
+          req.msg= req.msg+err;
+          next();
+        })
+        .use(send_msg)
+      ,
+      [
+        function(cb) {
+          get('/','aerror!',cb)
+        },
+      ],
+      done
+    );
+  } );
+it( 'should allow an error handler to punt the error to the next error handler', function(done) {
+    return done();
+    serve(
+      composable()
+        .use(function (req,res,next) {
+          debugger
+          next()
+        })
+        .use(
+              composable()
+                .use(prepare_msg)
+                .use(mw('a'))
+                .use(function (req,res,next) {
+                  next('error!')
+                })
+                .use(function (err,req,res,next) {
+                  req.msg= req.msg+err;
+                  next(err);
+                })
+                .use(function (err,req,res,next) {
+                  req.msg= req.msg+err;
+                  next();
+                })
+                .use(send_msg)
+                )
+      ,
+      [
+        function(cb) {
+          get('/','aerror!',cb)
+        },
+      ],
+      done
+    );
+  } );
 } );
