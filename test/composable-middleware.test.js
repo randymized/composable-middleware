@@ -396,11 +396,9 @@ it( 'should go back to the normal stack if an error handler calls next() without
     );
   } );
 it( 'should allow an error handler to punt the error to the next error handler', function(done) {
-    return done();
     serve(
       composable()
         .use(function (req,res,next) {
-          debugger
           next()
         })
         .use(
@@ -423,7 +421,7 @@ it( 'should allow an error handler to punt the error to the next error handler',
       ,
       [
         function(cb) {
-          get('/','aerror!',cb)
+          get('/','aerror!error!',cb)
         },
       ],
       done
