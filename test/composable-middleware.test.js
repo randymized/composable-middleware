@@ -352,7 +352,7 @@ describe( 'composable-middleware', function() {
       done
     );
   } );
-it( 'should work as expected if the error-handling middleware is right after the middleware producing an error', function(done) {
+  it( 'should work as expected if the error-handling middleware is right after the middleware producing an error', function(done) {
     serve(
       composable()
         .use(prepare_msg)
@@ -373,7 +373,7 @@ it( 'should work as expected if the error-handling middleware is right after the
       done
     );
   } );
-it( 'should go back to the normal stack if an error handler calls next() without an err argument', function(done) {
+  it( 'should go back to the normal stack if an error handler calls next() without an err argument', function(done) {
     serve(
       composable()
         .use(prepare_msg)
@@ -395,7 +395,7 @@ it( 'should go back to the normal stack if an error handler calls next() without
       done
     );
   } );
-it( 'should allow an error handler to punt the error to the next error handler', function(done) {
+  it( 'should allow an error handler to punt the error to the next error handler', function(done) {
     serve(
       composable()
         .use(function (req,res,next) {
@@ -423,6 +423,31 @@ it( 'should allow an error handler to punt the error to the next error handler',
         function(cb) {
           get('/','aerror!error!',cb)
         },
+      ],
+      done
+    );
+  } );
+  it( 'should allow later additions', function(done) {
+    var ab= composable(
+      mw('a'),
+      mw('b')
+    );
+    var full= composable(
+      prepare_msg,
+      ab,
+      send_msg
+    );
+    serve(
+      full,
+      [
+        function(cb) {
+          get('/','ab',function() {
+            ab.use(mw('c'));
+            get('/x','abc',function() {
+              cb();
+            })
+          })
+        }
       ],
       done
     );
