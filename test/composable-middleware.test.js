@@ -452,4 +452,14 @@ describe( 'composable-middleware', function() {
       done
     );
   } );
+  it( 'should reject use() argument other than middleware function or array of', function() {
+    (function () {
+        var ab= composable('a')
+    }).should.throw();
+  });
+  it( 'should reject use() of a function with unexpected arity', function() {
+    (function () {
+        var ab= composable(function(req,res) {})
+    }).should.throw();
+  });
 } );
