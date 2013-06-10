@@ -28,7 +28,7 @@ module.exports = function( grunt )
           timeout: 10000,
           ignoreLeaks: false,
           ui: 'bdd',
-          reporter: 'dot'
+          reporter: 'list' //'dot'
         }
       }
     },
