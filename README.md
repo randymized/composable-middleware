@@ -73,8 +73,7 @@ The middleware type is determined by checking its arity:
 - 3: Connect normal
 - 4: Connect error-handling
 
-
-
+Although not a convention shared by other middleware containers, this package calls all middleware serving a given request with the same `this` object.  It should thus be possible to attach an attribute to `this` in one middleware function and access it in a different middleware function serving the same request.
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
@@ -83,7 +82,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 [![Build Status](https://secure.travis-ci.org/randymized/composable-middleware.png?branch=master)](http://travis-ci.org/randymized/composable-middleware)
 
 ## Release History
-_(Nothing yet)_
+-0.1.0: Initial release.
 
 ## License
 Copyright (c) 2013 Randy McLaughlin

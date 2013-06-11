@@ -527,4 +527,50 @@ describe( 'composable-middleware', function() {
       done
     );
   } );
+
+  it( 'should attach all middleware serving a given request to the same object', function(done) {
+    serve(
+      composable()
+        .use(function () {
+          this.msg= 'a';
+          this.res.emit('next');
+        })
+        .use(function (next) {
+          this.msg+= 'b';
+          next();
+        })
+        .use(function (req,res,next) {
+          this.msg+= 'c';
+          next();
+        })
+        .use(composable()
+          .use(function (next) {
+            this.msg+= 'd';
+            next();
+          })
+          .use(function (next) {
+            this.msg+= 'e';
+            next();
+          })
+        )
+        .use(function (next) {
+          next('error!')
+        })
+        .use(function (next) {
+          this.msg+= 'f';
+          next();
+        })
+        .use(function (err,next) {
+          this.res.send(err+' '+this.msg);
+        })
+        .use(send_msg)
+      ,
+      [
+        function(cb) {
+          get('/','error! abcde',cb)
+        },
+      ],
+      done
+    );
+  } );
 } );
