@@ -11,6 +11,7 @@ var composable_middleware = require( 'composable-middleware' );
 
 ## Documentation
 Middleware is a function that follows specific conventions.  Composable middleware allows a series of middleware functions to be used as if they were a single middleware function.  With it, a middleware stack is middleware and becomes a first-class object.  With composable middleware you can:
+
 -Define middleware that consists of several middleware steps and include it in another middleware stack.
 -Assign a middleware stack to a variable or index it in an object.
 -Form conditional or branching middleware paths, dynamically selecting middleware depending upon things like hostname, HTTP method or route.
@@ -58,7 +59,7 @@ The composable_middleware software also does not deal with errors or unhandled r
 
 ### Middleware conventions supported.
 
-The Composable Middleware package supports Connect middleware and [https://github.com/flatiron/union](flatiron/union) middleware as well as a hybrid of the two.
+The Composable Middleware package supports Connect middleware and [flatiron/union](https://github.com/flatiron/union) middleware as well as a hybrid of the two.
 
 - Connect normal middleware: `(req,res,next)`
 - Flatiron/union middleware: `()`.  The request and response are in `this.req` and `this.res`.  `this.res.emit('next')` passes the request to the next level of middleware.
@@ -73,6 +74,8 @@ The middleware type is determined by checking its arity:
 - 3: Connect normal
 - 4: Connect error-handling
 
+Error-handling middleware is skipped unless an error was passed to the `next` function.  Normal middleware is skipped if there is an error.
+
 Although not a convention shared by other middleware containers, this package calls all middleware serving a given request with the same `this` object.  It should thus be possible to attach an attribute to `this` in one middleware function and access it in a different middleware function serving the same request.
 
 ## Contributing
@@ -83,6 +86,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 ## Release History
 -0.1.0: Initial release.
+-0.2.0: Same `this` object for all middleware serving a given request.
 
 ## License
 Copyright (c) 2013 Randy McLaughlin
