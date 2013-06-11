@@ -459,7 +459,72 @@ describe( 'composable-middleware', function() {
   });
   it( 'should reject use() of a function with unexpected arity', function() {
     (function () {
-        var ab= composable(function(req,res) {})
+        var ab= composable(function(a,b,c,d,e) {})
     }).should.throw();
   });
+  it( 'should support both connect and Flatiron Union middleware', function(done) {
+    serve(
+      composable([
+        function() {    // flatiron middleware
+          this.req.msg= 'a';
+          this.res.emit('next');
+        },
+        function(req,res,next) {  // Connect middleware
+          res.send(req.msg+'b');
+        }
+      ]),
+      [
+        function(cb) {
+          get('/','ab',cb)
+        },
+      ],
+      done
+    );
+  } );
+  it( 'should support hybrid middleware as well as Union and Connect middleware', function(done) {
+    serve(
+      composable([
+        function() {    // flatiron middleware
+          this.req.msg= 'a';
+          this.res.emit('next');
+        },
+        function(next) {    // hybrid middleware
+          this.req.msg+= 'b';
+          next();
+        },
+        function(req,res,next) {  // Connect middleware
+          res.send(req.msg+'c');
+        }
+      ]),
+      [
+        function(cb) {
+          get('/','abc',cb)
+        },
+      ],
+      done
+    );
+  } );
+
+  it( 'should recognize hybrid error-handling middleware and route next(err) to it, bypassing any intermediate middleware', function(done) {
+    serve(
+      composable()
+        .use(prepare_msg)
+        .use(mw('a'))
+        .use(function (req,res,next) {
+          next('error!')
+        })
+        .use(mw('b'))
+        .use(function (err,next) {
+          this.res.send(err+' '+this.req.msg);
+        })
+        .use(send_msg)
+      ,
+      [
+        function(cb) {
+          get('/','error! a',cb)
+        },
+      ],
+      done
+    );
+  } );
 } );
