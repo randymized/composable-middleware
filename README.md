@@ -85,8 +85,8 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 [![Build Status](https://secure.travis-ci.org/randymized/composable-middleware.png?branch=master)](http://travis-ci.org/randymized/composable-middleware)
 
 ## Release History
--0.1.0: Initial release.
--0.2.0: Same `this` object for all middleware serving a given request.
+- 0.1.0: Initial release.
+- 0.2.0: Same `this` object for all middleware serving a given request.
 
 ## License
 Copyright (c) 2013 Randy McLaughlin
