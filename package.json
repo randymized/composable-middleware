@@ -1,7 +1,7 @@
 {
   "name": "composable-middleware",
   "description": "Treat a sequence of middleware as middleware.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "homepage": "https://github.com/randymized/composable-middleware",
   "author": {
     "name": "Randy McLaughlin",
