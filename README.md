@@ -76,7 +76,7 @@ The middleware type is determined by checking its arity:
 
 Error-handling middleware is skipped unless an error was passed to the `next` function.  Normal middleware is skipped if there is an error.
 
-Although not a convention shared by other middleware containers, this package calls all middleware serving a given request with the same `this` object.  It should thus be possible to attach an attribute to `this` in one middleware function and access it in a different middleware function serving the same request.
+Although not a convention shared by other middleware containers, this package calls all middleware serving a given request in the same context.  It should thus be possible to attach an attribute to `this` in one middleware function and access it in a different middleware function serving the same request.  This package will assure, however, that the global object is not used as the context, allocating a new object to serve as the context, if needed.  To avoid the possibility of interference, if invoked as Connect middleware, `composable-middleware` will similarly replace the Connect context with a new context.  If a new context is created, `this._middleware_common_object` will be defined.  The constructor for the new context is exported as MiddlewareCommonObject and the function used by `composable-middleware` to test whether a new context is needed is exported as `is_protected_content`.
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).

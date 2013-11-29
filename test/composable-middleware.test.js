@@ -2,6 +2,7 @@
 'use strict';
 
 require('should');
+var assert= require('assert');
 var http = require('http');
 var request = require('request');
 var async = require('async');
@@ -572,5 +573,23 @@ describe( 'composable-middleware', function() {
       ],
       done
     );
+  } );
+  it( 'should assure that there is a context and it is not the global object', function(done) {
+    serve(
+      composable()
+      .use(function () {
+        this.res.send(!this.global && typeof(this._middleware_common_object));
+      })
+      ,
+      [
+        function(cb) {
+          get('/','function',cb)
+        },
+      ],
+      done
+    )
+  } );
+  it( 'should advise that the global object is to be protected', function(){
+    assert(composable.is_protected_context(global))
   } );
 } );
