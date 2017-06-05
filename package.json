@@ -1,7 +1,7 @@
 {
   "name": "@ineentho/composable-middleware",
   "description": "Treat a sequence of middleware as middleware.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "homepage": "https://github.com/ineentho/composable-middleware",
   "author": {
     "name": "Randy McLaughlin",
