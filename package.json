@@ -1,23 +1,23 @@
 {
-  "name": "composable-middleware",
+  "name": "@ineentho/composable-middleware",
   "description": "Treat a sequence of middleware as middleware.",
   "version": "0.3.0",
-  "homepage": "https://github.com/randymized/composable-middleware",
+  "homepage": "https://github.com/ineentho/composable-middleware",
   "author": {
     "name": "Randy McLaughlin",
     "email": "ot40ddj02@sneakemail.com"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/randymized/composable-middleware.git"
+    "url": "git://github.com/ineentho/composable-middleware.git"
   },
   "bugs": {
-    "url": "https://github.com/randymized/composable-middleware/issues"
+    "url": "https://github.com/ineentho/composable-middleware/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/randymized/composable-middleware/blob/master/LICENSE-MIT"
+      "url": "https://github.com/ineentho/composable-middleware/blob/master/LICENSE-MIT"
     }
   ],
   "main": "./index.js",
