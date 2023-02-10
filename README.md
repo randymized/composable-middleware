@@ -2,6 +2,11 @@
 
 > Treat a sequence of middleware as middleware.
 
+[![Not Maintained](https://img.shields.io/badge/Maintenance%20Level-Abandoned-orange.svg)](https://gist.github.com/cheerfulstoic/d107229326a01ff0f333a1d3476e068d)
+
+composable-middleware is no longer being actively developed and has been archived. 
+You might want to check forks of it, such as the more recently maintained [innentho fork](https://github.com/ineentho/composable-middleware).
+
 ## Getting Started
 Install the module with: `npm install composable-middleware`
 
